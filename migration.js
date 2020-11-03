@@ -1,6 +1,6 @@
 const sqlite3 = require('sqlite3');
 
-const db = new sqlite3.Database(process.env.TEST_DATABASE || './database.sqlite');
+const db = new sqlite3.Database('./database.sqlite');
 
 db.serialize(() => {
   db.run('DROP TABLE IF EXISTS Employee');
@@ -9,7 +9,7 @@ db.serialize(() => {
       name TEXT NOT NULL,
       position TEXT NOT NULL,
       wage INTEGER NOT NULL,
-      is_currently_employee INTEGER DEFAULT 1
+      is_current_employee INTEGER DEFAULT 1
   )`);
 });
 
