@@ -9,7 +9,7 @@ db.serialize(() => {
       name TEXT NOT NULL,
       position TEXT NOT NULL,
       wage INTEGER NOT NULL,
-      is_current_employee INTEGER DEFAULT 1
+      is_current_employee INTEGER NOT NULL DEFAULT 1
   )`);
 });
 
