@@ -1,6 +1,5 @@
 const express = require('express');
 const sqlite3 = require('sqlite3');
-const employeesRouter = require('./employees');
 
 const db = new sqlite3.Database(process.env.TEST_DATABASE || './database.sqlite');
 
@@ -84,6 +83,16 @@ timesheetsRouter
               }
               res.status(200).json({ timesheet });
             });
+        }
+      });
+  })
+  .delete('/:timesheetId', (req, res, next) => {
+    db.run(`DELETE FROM Timesheet WHERE id = ${req.timesheet.id}`,
+      (err) => {
+        if (err) {
+          next(err);
+        } else {
+          res.sendStatus(204);
         }
       });
   });
