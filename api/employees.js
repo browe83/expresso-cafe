@@ -8,7 +8,6 @@ const employeesRouter = express.Router();
 
 employeesRouter
   .param('employeeId', (req, res, next, id) => {
-    console.log('pass thru param');
     db.get(`SELECT * FROM Employee WHERE id = ${id}`,
       (err, employee) => {
         if (err) {

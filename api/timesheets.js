@@ -7,6 +7,19 @@ const db = new sqlite3.Database(process.env.TEST_DATABASE || './database.sqlite'
 const timesheetsRouter = express.Router({ mergeParams: true });
 
 timesheetsRouter
+  .param('timesheetId', (req, res, next, id) => {
+    db.get(`SELECT * FROM Timesheet WHERE id = ${id}`,
+      (err, timesheet) => {
+        if (err) {
+          next(err);
+        } else if (timesheet) {
+          req.timesheet = timesheet;
+          next();
+        } else {
+          res.sendStatus(404);
+        }
+      });
+  })
   .get('/', (req, res, next) => {
     db.all(`SELECT * FROM Timesheet WHERE employee_id = ${req.params.employeeId}`,
       (err, timesheets) => {
@@ -43,6 +56,35 @@ timesheetsRouter
             }
             res.status(201).json({ timesheet });
           });
+      });
+  })
+  .put('/:timesheetId', (req, res, next) => {
+    const { hours } = req.body.timesheet;
+    const { rate } = req.body.timesheet;
+    const { date } = req.body.timesheet;
+    const { employeeId } = req.params;
+    if (!hours || !rate || !date) {
+      return res.sendStatus(400);
+    }
+    db.run(`UPDATE Timesheet SET hours = $hours, rate = $rate, date = $date, employee_id = $employeeId WHERE id = ${req.timesheet.id}`,
+      {
+        $hours: hours,
+        $rate: rate,
+        $date: date,
+        $employeeId: employeeId,
+      },
+      (err) => {
+        if (err) {
+          next(err);
+        } else {
+          db.get(`SELECT * FROM Timesheet WHERE id = ${req.timesheet.id};`,
+            (error, timesheet) => {
+              if (error) {
+                next(error);
+              }
+              res.status(200).json({ timesheet });
+            });
+        }
       });
   });
 
